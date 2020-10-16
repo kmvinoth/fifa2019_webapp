@@ -1,0 +1,42 @@
+version: '3'
+
+# volumes:
+#   local_mysql_data: {}
+#   local_mysql_data_backups: {}
+
+services:
+  web: &web
+    build:
+      context: .
+      dockerfile: ./compose/local/cherrypy/Dockerfile
+    image: cherrypy_local_img
+    container_name: fifa2019_app
+    volumes:
+      - .:/code
+    ports:
+      - "80:8080"
+    depends_on:
+      - db
+    # env_file:
+    #   - ./.envs/.local/.cherrypy
+    #   - ./.envs/.local/.mysql
+    command: python /code/main.py
+
+  db:
+    build:
+      context: .
+      dockerfile: ./compose/local/mysql/Dockerfile
+    image: local_mysql_img
+    container_name: mysql
+    volumes:
+      - /home/vagrant/data:/var/lib/mysql
+      # - local_mysql_data_backups:/backupssql
+    environment:
+      MYSQL_ROOT_PASSWORD: abc
+      MYSQL_DATABASE: fifa2019
+      MYSQL_USER: vinoth
+      MYSQL_PASSWORD: abc
+    # env_file:
+    #   - ./.envs/.local/.mysql
+    ports:
+      - "3306:3306"
