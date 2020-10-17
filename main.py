@@ -4,42 +4,39 @@ from sqlalchemy import Column, Integer, String, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
+from sqlalchemy.ext.automap import automap_base
+from sqlalchemy.orm import Session
+from sqlalchemy import create_engine, func
+
+
 from jinja2 import Environment, FileSystemLoader
 env = Environment(loader=FileSystemLoader('templates'))
 
 cherrypy.config.update({'server.socket_host': '0.0.0.0',
                         'server.socket_port': 8080,
                        })
-                    
+
+Base = automap_base()
+
 engine = create_engine('mysql+pymysql://root:abc@172.20.0.2/fifa_players')
 
-Session = sessionmaker(bind=engine)
+Base.prepare(engine, reflect=True)
 
-Base = declarative_base()
+Player = Base.classes.task
 
-class Author(Base):
-    __tablename__ = "author"
-    author_id = Column(Integer, primary_key=True)
-    first_name = Column(String)
-    last_name = Column(String)
-
-    def __init__(self, first_name, last_name):
-        self.first_name = first_name
-        self.last_name = last_name
-
-    def __repr__(self):
-      return "fname=%s,lname=%s" %(self.first_name, self.last_name)
-
+session = Session(engine)
 
 class Root(object):
 
     @cherrypy.expose
-    def index(self):
-      session = Session()
-      authors = session.query(Author).all()
-      print(authors)
+    def index(self, q=None, budget=None):
+      page_index=1
+      page_size=session.query(func.count(Player.ID)).scalar()
+      print("Page SIZE = ",page_size)
+      players = session.query(Player.Name, Player.Age, Player.Nationality, Player.Club, Player.Photo, Player.Overall, Player.Value).filter().order_by(Player.ID).offset((page_index-1) *page_size).limit(page_size).all()
+      # print(players[0].Name)
       tmpl = env.get_template('index.html')
-      return tmpl.render()
+      return tmpl.render(players=players)
     
     @cherrypy.expose
     def search(self, q=None):

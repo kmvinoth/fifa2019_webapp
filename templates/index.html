@@ -3,24 +3,75 @@
     <!-- CONTENT BLOCK -->
     {% block content %}
 
-    <div class="col-sm-6", align='center'>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6", align='center'>
 
-        <form class="form-inline" action="search",class="was-validated" method="GET">
-            
-            <!-- <label for="email" class="mr-sm-2">Email address:</label> -->
-            <input type="text" class="form-control mb-2 mr-sm-2" placeholder="Messi, Argentina, FC Barcelona" name="q" required>
-            <button type="submit" class="btn btn-primary mb-2">Search</button>
-        </form>
+                <form class="form-inline" action=" ",class="was-validated" method="GET">
+                    
+                    <!-- <label for="email" class="mr-sm-2">Email address:</label> -->
+                    <input type="text" class="form-control mb-2 mr-sm-2" placeholder="Messi, Argentina, FC Barcelona" name="q" required>
+                    <button type="submit" class="btn btn-primary mb-2">Search</button>
+                </form>
+            </div>
+        
+            <div class="col-sm-6", align='center'>
+        
+                <form class="form-inline" action=" ",class="was-validated" method="GET">
+                    <!-- <label for="email" class="mr-sm-2">Email address:</label> -->
+                    <input type="text" class="form-control mb-2 mr-sm-2" placeholder="200,000,000" name="budget" required>
+                    <button type="submit" class="btn btn-primary mb-2">Build Team</button>
+                </form>
+            </div>
+        </div>
     </div>
 
-    <div class="col-sm-6", align='center'>
 
-        <form class="form-inline" action="build_team",class="was-validated" method="GET">
-            <!-- <label for="email" class="mr-sm-2">Email address:</label> -->
-            <input type="text" class="form-control mb-2 mr-sm-2" placeholder="200,000,000" name="budget" required>
-            <button type="submit" class="btn btn-primary mb-2">Build Team</button>
-        </form>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <table id="dtBasicExample" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+                    <thead>
+                      <tr>
+                        <th class="th-sm">Name </th>
+                        <th class="th-sm">Age</th>
+                        <th class="th-sm">Nationality</th>
+                        <th class="th-sm">Club</th>
+                        <th class="th-sm">Photo</th>
+                        <th class="th-sm">OA(score)</th>
+                        <th class="th-sm">Value</th>
+                      </tr>
+                    </thead>
+                    
+                    <tbody>
+                        {% for player in players %}
+                            <tr> 
+                                <td>{{ player.Name}}</td>
+                                <td>{{ player.Age}}</td>
+                                <td>{{ player.Nationality}}</td>
+                                <td>{{ player.Club}}</td>
+                                <td>{{ player.Photo}}</td>
+                                <td>{{ player.Overall}}</td>
+                                <td>{{ player.Value}}</td>
+                            </tr>
+                        {% endfor %}
+                </table>
+            </div>
+        </div>
     </div>
 
+      <script>
+
+          // Basic example
+            $(document).ready(function () {
+            $('#dtBasicExample').DataTable({
+                "pagingType": "simple" // "simple" option for 'Previous' and 'Next' buttons only
+            });
+            $('.dataTables_length').addClass('bs-select');
+            });
+
+      </script>
+
+    
     {% endblock %}
     <!-- END OF CONTENT BLOCK -->
