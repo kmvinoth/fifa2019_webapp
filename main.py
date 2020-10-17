@@ -29,28 +29,31 @@ session = Session(engine)
 class Root(object):
 
     @cherrypy.expose
-    def index(self, q=None, budget=None):
-      page_index=1
-      page_size=session.query(func.count(Player.ID)).scalar()
-      print("Page SIZE = ",page_size)
-      players = session.query(Player.Name, Player.Age, Player.Nationality, Player.Club, Player.Photo, Player.Overall, Player.Value).filter().order_by(Player.ID).offset((page_index-1) *page_size).limit(page_size).all()
-      # print(players[0].Name)
-      tmpl = env.get_template('index.html')
-      return tmpl.render(players=players)
-    
-    @cherrypy.expose
-    def search(self, q=None):
-      if q:
-        return 'Working'
-      else:
-        return 'Not Working'
+    def index(self, Name=None, Club=None, Nationality=None, budget=None):
 
-    @cherrypy.expose
-    def build_team(self, budget=None):
-      if budget:
-        return 'Working'
+      request_params = cherrypy.request.params
+
+      if not request_params:
+        page_index=1
+        page_size=100
+        # players = session.query(Player.Name, Player.Age, Player.Nationality, Player.Club, Player.Photo, Player.Overall, Player.Value).filter().order_by(Player.ID).offset((page_index-1) *page_size).limit(page_size).all()
+        players = session.query(Player).order_by(Player.ID).offset((page_index-1) *page_size).limit(page_size).all()
+        tmpl = env.get_template('index.html')
+        return tmpl.render(players=players)
       else:
-        return 'Not Working'
+        query = session.query(Player)
+        for attr,value in request_params.items():
+          # print(attr,value)
+          if value is not '':
+            query = query.filter( getattr(Player,attr).like("%%%s%%" % value))
+        players = query.all()
+        # print("PLAYERS=", players)
+        tmpl = env.get_template('index.html')
+        return tmpl.render(players=players,search=True)
+
+      # players = session.query().filter_by(Name=name,Club=club,Nationality=nationality).all()
+
+      # print("Player Name = ",players)
 
 if __name__ == '__main__':
     conf = {
