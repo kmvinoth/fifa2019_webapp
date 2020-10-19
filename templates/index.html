@@ -39,7 +39,7 @@
                     <div class="form-group">
                         <!-- <label class="control-label col-sm-2" for="pwd">Password:</label> -->
                         <div class="col-sm-6">
-                          <input type="text" class="form-control" id="budget" placeholder="Enter Budget" name="budget" required>
+                          <input type="number" class="form-control" id="budget" placeholder="100,000,000" name="Budget" required>
                         </div>
                     </div>
 
@@ -53,18 +53,54 @@
         </div>
     </div>
 
+    {% if team_builder %}
 
-    {% if not players %}
+        {% if message_error %}
 
-      <p style="color:red;" align='center'>No Records found for your search terms.</p>
+          <p style="color:red;" align='center'>Budget query parameter not found in request.</p>
 
-    {% else %}
+        {% endif %}
+
+        {% if message_none %}
+
+          <p style="color:red;" align='center'>Unfortunately, We cannot able to find the best team for the given Budget {{budget}} value</p>
+
+        {% endif %}
+        
+        {% if message_budget %}
+
+          <p style="color:red;" align='center'>Kindly Enter the Budget value within 1Million and 1000Million. You have entered this {{budget}} as Budget value</p>
+
+        {% endif %}
+        
+        {% if message_traceback %}
+
+          <p style="color:red;" align='center'>Sorry, We cannot be able to proces your request now. Try after sometime</p>
+        
+        {% endif %}
+
+        {% if players  %}
+
+          <p style="color:blue;" align='center'>The Best Team for the given budget {{budget}} </p>
+        
+        {% endif %}
+
+    {% endif %}
+
 
     {% if search %}
 
-      <p style="color:blue;" align='center'>Your Search results are displayed below in the Table</p>
+      {% if not players %}
+
+        <p style="color:red;" align='center'>No Records found for your search terms.</p>
+    
+      {% endif %}
     
     {% endif %}
+
+    {% if team_builder %} <h3 style="color:blue;" align='center'> Best Team Table </h3> {% endif %}
+
+    {% if search %} <h3 style="color:blue;" align='center'> Players Search Results Table </h3> {% endif %}
 
       <div class="container">
         <div class="row">
@@ -79,6 +115,7 @@
                         <th class="th-sm">Photo</th>
                         <th class="th-sm">OA(score)</th>
                         <th class="th-sm">Value</th>
+                        {% if team_builder %} <th class="th-sm">Position</th> {% endif %}
                       </tr>
                     </thead>
                     
@@ -89,9 +126,10 @@
                                 <td>{{ player.Age}}</td>
                                 <td>{{ player.Nationality}}</td>
                                 <td>{{ player.Club}}</td>
-                                <td><img src="{{ player.Photo}}" class="img-fluid img-thumbnail" alt="Sheep"></td>
+                                <td><img src="{{player.Photo}}" class="img-fluid img-thumbnail" alt="avatar"></td>
                                 <td>{{ player.Overall}}</td>
                                 <td>{{ player.Value}}</td>
+                                {% if team_builder %} <td>{{ player.Position}} </td> {% endif %}
                             </tr>
                         {% endfor %}
                 </table>
@@ -99,7 +137,7 @@
         </div>
     </div>
     
-    {% endif %}
+    
 
       <script>
 
