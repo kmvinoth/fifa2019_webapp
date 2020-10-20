@@ -14,6 +14,8 @@ import team_build
 import traceback
 import re
 
+from cherrypy._cpnative_server import CPHTTPServer
+
 from jinja2 import Environment, FileSystemLoader
 env = Environment(loader=FileSystemLoader('templates'))
 
@@ -23,11 +25,13 @@ cherrypy.config.update({'server.socket_host': '0.0.0.0',
 
 Base = automap_base()
 
-engine = create_engine('mysql+pymysql://root:abc@172.20.0.2/fifa_players')
+db_url = config('DB_URL')
+
+engine = create_engine(db_url)
 
 Base.prepare(engine, reflect=True)
 
-Player = Base.classes.task
+Player = Base.classes.fifa19_data
 
 session = Session(engine)
 
@@ -42,8 +46,8 @@ class Root(object):
     @cherrypy.expose
     def index(self, Name=None, Club=None, Nationality=None, Budget=None):
 
-      # response_headers = cherrypy.response.headers
-      # secure.SecureCookie.cherrypy(response_headers, name="cherrypy", value="ABC123", samesite=False, secure=True)
+      response_headers = cherrypy.response.headers
+      secure.SecureCookie.cherrypy(response_headers, name="cherrypy", value="ABC123", samesite=None, secure=True)
 
       request_params = cherrypy.request.params
       query = session.query(Player)
@@ -108,8 +112,11 @@ class Root(object):
         return tmpl.render(players=players,search=True)
 
 if __name__ == '__main__':
+    # cherrypy.server.httpserver = CPHTTPServer(cherrypy.server)
     conf = {
         '/': {
+            # 'server.socket_port': 8080,
+            # 'tools.proxy.on': True,
             'tools.sessions.on': True,
             'tools.staticdir.root': os.path.abspath(os.getcwd()),
             'tools.response_headers.on': True,

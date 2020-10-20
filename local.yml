@@ -5,22 +5,6 @@ version: '3'
 #   local_mysql_data_backups: {}
 
 services:
-  web: &web
-    build:
-      context: .
-      dockerfile: ./compose/local/cherrypy/Dockerfile
-    image: cherrypy_local_img
-    container_name: fifa2019_app
-    volumes:
-      - .:/code
-    ports:
-      - "80:8080"
-    depends_on:
-      - db
-    # env_file:
-    #   - ./.envs/.local/.cherrypy
-    #   - ./.envs/.local/.mysql
-    command: python /code/main.py
 
   db:
     build:
@@ -40,3 +24,20 @@ services:
     #   - ./.envs/.local/.mysql
     ports:
       - "3306:3306"
+
+  web: &web
+    build:
+      context: .
+      dockerfile: ./compose/local/cherrypy/Dockerfile
+    image: cherrypy_local_img
+    container_name: fifa2019_app
+    volumes:
+      - .:/code
+    ports:
+      - "80:8080"
+    depends_on:
+      - db
+    # env_file:
+    #   - ./.envs/.local/.cherrypy
+    #   - ./.envs/.local/.mysql
+    command: python /code/main.py
